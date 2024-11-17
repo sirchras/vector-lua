@@ -85,7 +85,7 @@ vector.__len = vector.mag
 function vector.norm(a)
 	assert(isvector(a), "wrong argument type: expected <vector>")
 	local mag = a:mag()
-	if mag <= 1 then
+	if mag == 1 or mag == 0 then
 		return a:clone()
 	else
 		return new(a.x / mag, a.y / mag)
