@@ -1,6 +1,11 @@
 local PI = math.pi
 
 -- vector class
+---@class vector
+---@field x number x coordinate
+---@field y number y coordinate
+---@operator add(vector): vector
+--@field dot fun(a:vector,b:vector):number
 local vector = {}
 vector.__index = vector
 
@@ -64,14 +69,20 @@ function vector.sub(a, b)
 end
 vector.__sub = vector.sub
 
--- return the dot product of two vectors
+---return the dot product of two vectors
+---@param a vector
+---@param b vector
+---@return number
 function vector.dot(a, b)
 	assert(isvector(a) and isvector(b),
 	 "wrong argument types: expected <vector> and <vector>")
 	return (a.x * b.x) + (a.y * b.y)
 end
 
--- return the product of scalar/vector or vector/vector multiplication
+---return the product of scalar/vector or vector/vector multiplication
+---@param a vector | number
+---@param b vector | number
+---@return vector | number
 function vector.mult(a, b)
 	if type(b) == "number" then
 		return new(a.x * b, a.y * b)
@@ -94,13 +105,17 @@ function vector.div(a, b)
 end
 vector.__div = vector.div
 
--- return the squared magnitude of the vector
+---return the squared magnitude of the vector
+---@param a vector
+---@return number
 function vector.magsq(a)
 	assert(isvector(a), "wrong argument type: expected <vector>")
 	return a:dot(a)
 end
 
--- return the magnitude of the vector
+---return the magnitude of the vector
+---@param a vector
+---@return number
 function vector.mag(a)
 	assert(isvector(a), "wrong argument type: expected <vector>")
 	return math.sqrt(a:magsq())
@@ -126,7 +141,11 @@ function vector.heading(a)
 	return math.atan(a.y, a.x) / (2 * PI) % 1
 end
 
--- return the distance between the vectors
+
+---return the distance between the vectors
+---@param a vector
+---@param b vector
+---@return number
 function vector.dist(a, b)
 	assert(isvector(a) and isvector(b),
 	 "wrong argument types: expected <vector> and <vector>")
