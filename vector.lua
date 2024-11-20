@@ -76,7 +76,6 @@ end
 ---@param b Vector
 ---@return Vector
 function Vector.add(a, b)
-
 	assert(isvector(a) and isvector(b),
 	 "wrong argument types: expected <Vector> and <Vector>")
 	return new(a.x + b.x, a.y + b.y)
