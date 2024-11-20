@@ -1,20 +1,30 @@
 local PI = math.pi
 
--- vector class
+---vector class
 ---@class vector
 ---@field x number x coordinate
 ---@field y number y coordinate
+---@operator call(): vector
 ---@operator add(vector): vector
---@field dot fun(a:vector,b:vector):number
+---@operator sub(vector): vector
+---@operator mul(vector|number): vector|number
+---@operator div(number): vector
+---@operator len:number
+---@operator unm:vector
 local vector = {}
 vector.__index = vector
 
--- check if obj is a vector
+---check if the table is a vector
+---@param t table
+---@return boolean # true if the table is a vector
 local function isvector(t)
 	return getmetatable(t) == vector
 end
 
--- create new vector
+---create new vector
+---@param x number x coordinate
+---@param y number y coordinate
+---@return vector
 local function new(x, y)
 	local o = {x = x or 0, y = y or 0}
 	assert(type(o.x) == "number" and type(o.y) == "number",
@@ -22,24 +32,32 @@ local function new(x, y)
 	return setmetatable(o, vector)
 end
 
--- create new unit vector from angle (in tau)
+---create new unit vector from angle
+---@param angle number as a fraction of a turn (2 * PI radians)
+---@return vector
 local function fromangle(angle)
 	-- angle in PICO-8 is expressed in fractions of 2 * PI
 	local angle = angle * 2 * PI
 	return new(math.cos(angle), -math.sin(angle))
 end
 
--- create a new random unit vector
+---create a new random unit vector
+---@return vector
 local function random()
 	return fromangle(math.random())
 end
 
--- return a clone of the vector
+---return a clone of the vector
+---@param self vector
+---@return vector
 function vector:clone()
 	return new(self.x, self.y)
 end
 
--- check if two vectors are equal
+---check if two vectors are equal
+---@param a vector
+---@param b vector
+---@return boolean # true if the vectors are equal
 function vector.iseq(a, b)
 	assert(isvector(a) and isvector(b),
 	 "wrong argument types: expected <vector> and <vector>")
@@ -47,13 +65,18 @@ function vector.iseq(a, b)
 end
 vector.__eq = vector.iseq
 
--- negate a vector (x,y) -> (-x,-y)
+---negate the vector
+---@param a vector
+---@return vector # opposite vector (-x, -y)
 function vector.__unm(a)
 	assert(isvector(a), "wrong argument type: expected <vector>")
 	return new(-a.x, -a.y)
 end
 
--- return the sum of two vectors
+---return the sum of two vectors
+---@param a vector
+---@param b vector
+---@return vector
 function vector.add(a, b)
 	assert(isvector(a) and isvector(b),
 	 "wrong argument types: expected <vector> and <vector>")
@@ -61,7 +84,10 @@ function vector.add(a, b)
 end
 vector.__add = vector.add
 
--- return the difference of two vectors
+---return the difference of two vectors
+---@param a vector
+---@param b vector
+---@return vector
 function vector.sub(a, b)
 	assert(isvector(a) and isvector(b),
 	 "wrong argument types: expected <vector> and <vector>")
@@ -96,7 +122,10 @@ function vector.mult(a, b)
 end
 vector.__mul = vector.mult
 
--- return the result of dividing the vector by non-zero scalar
+---return the result of dividing the vector by non-zero scalar
+---@param a vector
+---@param b number # must be non-zero
+---@return vector
 function vector.div(a, b)
 	assert(isvector(a) and type(b) == "number",
 	 "wrong argument types: expected <vector> and <number>")
@@ -122,7 +151,9 @@ function vector.mag(a)
 end
 vector.__len = vector.mag
 
--- return a norm of the vector
+---return the normalized vector
+---@param a vector
+---@return vector
 function vector.norm(a)
 	assert(isvector(a), "wrong argument type: expected <vector>")
 	local mag = a:mag()
@@ -133,7 +164,9 @@ function vector.norm(a)
 	end
 end
 
--- return the angle heading of the vector (in tau)
+---return the angle heading of the vector
+---@param a vector
+---@return number # angle as a fraction of a turn (2 * PI radians)
 function vector.heading(a)
 	assert(isvector(a), "wrong argument type: expected <vector>")
 	-- this is what works for some reason
@@ -153,8 +186,10 @@ function vector.dist(a, b)
 	return diff:mag()
 end
 
--- todo: better function name?
--- return the angle between the vectors
+---return the angle between the vectors
+---@param a vector
+---@param b vector
+---@return number # angle as a fraction of a turn (2 * PI radians)
 function vector.angle(a, b)
 	assert(isvector(a) and isvector(b),
 	 "wrong argument types: expected <vector> and <vector>")
@@ -168,8 +203,11 @@ end
 -- todo:
 -- could use math.modf to try handle small fractional differences
 -- could also just math.abs the difference in vector headings
+-- better function name?
 
--- return string representation of the vector
+---return string representation of the vector
+---@param self vector
+---@return string
 function vector:__tostring()
 	return "(" .. self.x .. "," .. self.y .. ")"
 end
