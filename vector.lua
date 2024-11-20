@@ -11,14 +11,14 @@ local PI = math.pi
 ---@operator div(number): vector
 ---@operator len:number
 ---@operator unm:vector
-local vector = {}
-vector.__index = vector
+local Vector = {}
+Vector.__index = Vector
 
 ---check if the table is a vector
 ---@param t table
 ---@return boolean # true if the table is a vector
 local function isvector(t)
-	return getmetatable(t) == vector
+	return getmetatable(t) == Vector
 end
 
 ---create new vector
@@ -29,7 +29,7 @@ local function new(x, y)
 	local o = {x = x or 0, y = y or 0}
 	assert(type(o.x) == "number" and type(o.y) == "number",
 	 "wrong argument types: expected <number> and <number>")
-	return setmetatable(o, vector)
+	return setmetatable(o, Vector)
 end
 
 ---create new unit vector from angle
@@ -50,7 +50,7 @@ end
 ---return a clone of the vector
 ---@param self vector
 ---@return vector
-function vector:clone()
+function Vector:clone()
 	return new(self.x, self.y)
 end
 
@@ -58,18 +58,18 @@ end
 ---@param a vector
 ---@param b vector
 ---@return boolean # true if the vectors are equal
-function vector.iseq(a, b)
+function Vector.iseq(a, b)
 	assert(isvector(a) and isvector(b),
-	 "wrong argument types: expected <vector> and <vector>")
+	 "wrong argument types: expected <Vector> and <Vector>")
 	return a.x == b.x and a.y == b.y
 end
-vector.__eq = vector.iseq
+Vector.__eq = Vector.iseq
 
 ---negate the vector
 ---@param a vector
 ---@return vector # opposite vector (-x, -y)
-function vector.__unm(a)
-	assert(isvector(a), "wrong argument type: expected <vector>")
+function Vector.__unm(a)
+	assert(isvector(a), "wrong argument type: expected <Vector>")
 	return new(-a.x, -a.y)
 end
 
@@ -77,31 +77,31 @@ end
 ---@param a vector
 ---@param b vector
 ---@return vector
-function vector.add(a, b)
+function Vector.add(a, b)
 	assert(isvector(a) and isvector(b),
-	 "wrong argument types: expected <vector> and <vector>")
+	 "wrong argument types: expected <Vector> and <Vector>")
 	return new(a.x + b.x, a.y + b.y)
 end
-vector.__add = vector.add
+Vector.__add = Vector.add
 
 ---return the difference of two vectors
 ---@param a vector
 ---@param b vector
 ---@return vector
-function vector.sub(a, b)
+function Vector.sub(a, b)
 	assert(isvector(a) and isvector(b),
-	 "wrong argument types: expected <vector> and <vector>")
+	 "wrong argument types: expected <Vector> and <Vector>")
 	return new(a.x - b.x, a.y - b.y)
 end
-vector.__sub = vector.sub
+Vector.__sub = Vector.sub
 
 ---return the dot product of two vectors
 ---@param a vector
 ---@param b vector
 ---@return number
-function vector.dot(a, b)
+function Vector.dot(a, b)
 	assert(isvector(a) and isvector(b),
-	 "wrong argument types: expected <vector> and <vector>")
+	 "wrong argument types: expected <Vector> and <Vector>")
 	return (a.x * b.x) + (a.y * b.y)
 end
 
@@ -109,53 +109,53 @@ end
 ---@param a vector | number
 ---@param b vector | number
 ---@return vector | number
-function vector.mult(a, b)
+function Vector.mult(a, b)
 	if type(b) == "number" then
 		return new(a.x * b, a.y * b)
 	elseif type(a) == "number" then
 		return new(b.x * a, b.y * a)
 	else
 		assert(isvector(a) and isvector(b),
-		 "wrong argument types: expected <vector> or <number>")
+		 "wrong argument types: expected <Vector> or <number>")
 		return a:dot(b)
 	end
 end
-vector.__mul = vector.mult
+Vector.__mul = Vector.mult
 
 ---return the result of dividing the vector by non-zero scalar
 ---@param a vector
 ---@param b number # must be non-zero
 ---@return vector
-function vector.div(a, b)
+function Vector.div(a, b)
 	assert(isvector(a) and type(b) == "number",
-	 "wrong argument types: expected <vector> and <number>")
+	 "wrong argument types: expected <Vector> and <number>")
 	assert(b ~= 0, "invalid argument: <number> should be non-zero")
 	return new(a.x / b, a.y / b)
 end
-vector.__div = vector.div
+Vector.__div = Vector.div
 
 ---return the squared magnitude of the vector
 ---@param a vector
 ---@return number
-function vector.magsq(a)
-	assert(isvector(a), "wrong argument type: expected <vector>")
+function Vector.magsq(a)
+	assert(isvector(a), "wrong argument type: expected <Vector>")
 	return a:dot(a)
 end
 
 ---return the magnitude of the vector
 ---@param a vector
 ---@return number
-function vector.mag(a)
-	assert(isvector(a), "wrong argument type: expected <vector>")
+function Vector.mag(a)
+	assert(isvector(a), "wrong argument type: expected <Vector>")
 	return math.sqrt(a:magsq())
 end
-vector.__len = vector.mag
+Vector.__len = Vector.mag
 
 ---return the normalized vector
 ---@param a vector
 ---@return vector
-function vector.norm(a)
-	assert(isvector(a), "wrong argument type: expected <vector>")
+function Vector.norm(a)
+	assert(isvector(a), "wrong argument type: expected <Vector>")
 	local mag = a:mag()
 	if mag == 1 or mag == 0 then
 		return a:clone()
@@ -167,22 +167,21 @@ end
 ---return the angle heading of the vector
 ---@param a vector
 ---@return number # angle as a fraction of a turn (2 * PI radians)
-function vector.heading(a)
-	assert(isvector(a), "wrong argument type: expected <vector>")
+function Vector.heading(a)
+	assert(isvector(a), "wrong argument type: expected <Vector>")
 	-- this is what works for some reason
 	-- really thought I'd have to invert the y arg to match PICO-8
 	return math.atan(a.y, a.x) / (2 * PI) % 1
 end
 
-
 ---return the distance between the vectors
 ---@param a vector
 ---@param b vector
 ---@return number
-function vector.dist(a, b)
+function Vector.dist(a, b)
 	assert(isvector(a) and isvector(b),
-	 "wrong argument types: expected <vector> and <vector>")
-	local diff = vector.sub(a, b)
+	 "wrong argument types: expected <Vector> and <Vector>")
+	local diff = Vector.sub(a, b)
 	return diff:mag()
 end
 
@@ -190,9 +189,9 @@ end
 ---@param a vector
 ---@param b vector
 ---@return number # angle as a fraction of a turn (2 * PI radians)
-function vector.angle(a, b)
+function Vector.angle(a, b)
 	assert(isvector(a) and isvector(b),
-	 "wrong argument types: expected <vector> and <vector>")
+	 "wrong argument types: expected <Vector> and <Vector>")
 	local a, b = a:norm(), b:norm()
 	if a:iseq(b) then
 		return 0.0
@@ -208,7 +207,7 @@ end
 ---return string representation of the vector
 ---@param self vector
 ---@return string
-function vector:__tostring()
+function Vector:__tostring()
 	return "(" .. self.x .. "," .. self.y .. ")"
 end
 
@@ -218,18 +217,18 @@ local module = {
 	isvector = isvector,
 	random = random,
 	fromangle = fromangle,
-	add = vector.add,
-	sub = vector.sub,
-	mult = vector.mult,
-	div = vector.div,
-	dot = vector.dot,
-	magsq = vector.magsq,
-	mag = vector.mag,
-	norm = vector.norm,
-	clone = vector.clone,
-	heading = vector.heading,
-	dist = vector.dist,
-	angle = vector.angle,
+	add = Vector.add,
+	sub = Vector.sub,
+	mult = Vector.mult,
+	div = Vector.div,
+	dot = Vector.dot,
+	magsq = Vector.magsq,
+	mag = Vector.mag,
+	norm = Vector.norm,
+	clone = Vector.clone,
+	heading = Vector.heading,
+	dist = Vector.dist,
+	angle = Vector.angle,
 }
 return setmetatable(module, {
 	__call = function(_,...) return new(...) end
