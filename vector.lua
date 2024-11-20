@@ -7,8 +7,8 @@ local PI = math.pi
 ---@operator sub(Vector): Vector
 ---@operator mul(Vector|number): Vector|number
 ---@operator div(number): Vector
----@operator len:number
----@operator unm:Vector
+---@operator len: number
+---@operator unm: Vector
 local Vector = {}
 Vector.__index = Vector
 
