@@ -202,6 +202,19 @@ end
 -- could also just math.abs the difference in vector headings
 -- better function name?
 
+---return the vector of equal heading, with a magnitude equal to or less than the provided limit
+---@param a Vector
+---@param b number limit
+---@return Vector
+function Vector.limit(a, b)
+	assert(isvector(a) and type(b) == "number",
+	 "wrong argument types: expected <Vector> and <number>")
+	if a:mag() <= b then
+		return a:clone()
+	end
+	return a:norm() * b --[[@as Vector]]
+end
+
 ---return string representation of the vector
 ---@param self Vector
 ---@return string
