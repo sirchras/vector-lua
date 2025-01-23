@@ -36,6 +36,8 @@ end
 local function fromangle(angle)
 	-- angle in PICO-8 is expressed in fractions of 2 * PI
 	local angle = angle * 2 * PI
+	-- todo: new headache, is this a bug?
+	-- starting to think the y coord shouldn't be inverted here ;-;
 	return new(math.cos(angle), -math.sin(angle))
 end
 
@@ -169,6 +171,7 @@ function Vector.heading(a)
 	assert(isvector(a), "wrong argument type: expected <Vector>")
 	-- this is what works for some reason
 	-- really thought I'd have to invert the y arg to match PICO-8
+	-- todo: might be a bug (see vector.fromangle) ;-;
 	return math.atan(a.y, a.x) / (2 * PI) % 1
 end
 
