@@ -36,7 +36,7 @@ end
 local function fromangle(angle)
 	-- angle in PICO-8 is expressed in fractions of 2 * PI
 	local angle = angle * 2 * PI
-	return new(math.cos(angle), -math.sin(angle))
+	return new(math.cos(angle), math.sin(angle))
 end
 
 ---create a new random unit vector
@@ -197,10 +197,6 @@ function Vector.angle(a, b)
 	-- floating point / nan headaches ;-;
 	return math.acos(a:dot(b)) / (2 * PI)
 end
--- todo:
--- could use math.modf to try handle small fractional differences
--- could also just math.abs the difference in vector headings
--- better function name?
 
 ---return the vector of equal heading, with a magnitude equal to or less than the provided limit
 ---@param a Vector
@@ -241,6 +237,7 @@ local module = {
 	heading = Vector.heading,
 	dist = Vector.dist,
 	angle = Vector.angle,
+	limit = Vector.limit,
 }
 return setmetatable(module, {
 	---@overload fun(_: any, ...): Vector
